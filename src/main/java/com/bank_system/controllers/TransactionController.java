@@ -5,6 +5,7 @@ import com.bank_system.dtos.response.ApiResponse;
 import com.bank_system.dtos.transaction.CreateTransaction;
 import com.bank_system.exceptions.InsufficientBalanceException;
 import com.bank_system.models.Transaction;
+import com.bank_system.services.implementations.MailSenderService;
 import com.bank_system.services.implementations.TransactionServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,10 +24,12 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('ADMIN')")
 public class TransactionController {
     private final TransactionServiceImpl transactionService;
+    private final MailSenderService mailSenderService;
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<Transaction>> createTransaction(@RequestBody CreateTransaction transaction) {
         try {
-            return transactionService.createTransaction(transaction);
+            ResponseEntity<ApiResponse<Transaction>> tran = transactionService.createTransaction(transaction);
+            return tran;
         } catch (IllegalArgumentException | InsufficientBalanceException e) {
             return ApiResponse.error(e.getMessage(), HttpStatus.BAD_REQUEST, null);
         }
