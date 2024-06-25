@@ -20,11 +20,7 @@ public class Transaction extends Base {
     @Column(name = "customer_id", nullable = false)
     private Long customerId;
 
-    @Column(name = "target_customer_id", nullable = true)
-    private Long targetCustomerId;
     private String account;
-    @Null
-    private String targetAccount;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -34,4 +30,18 @@ public class Transaction extends Base {
     private Date bankingDateTime;
 
     private int amount;
+
+    @Column(name = "target_customer_id", nullable = true)
+    private Long targetCustomerId;
+
+    @Column(name = "target_account", nullable = true)
+    private String targetAccount;
+
+    public Transaction(Long customerId, String account, TransactionType type, Date bankingDateTime, int amount) {
+        this.amount = amount;
+        this.bankingDateTime = bankingDateTime;
+        this.type = type;
+        this.account = account;
+        this.customerId = customerId;
+    }
 }

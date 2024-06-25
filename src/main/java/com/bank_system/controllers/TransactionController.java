@@ -3,10 +3,13 @@ package com.bank_system.controllers;
 
 import com.bank_system.dtos.response.ApiResponse;
 import com.bank_system.dtos.transaction.CreateTransaction;
+import com.bank_system.dtos.transaction.CreateTransfer;
+import com.bank_system.exceptions.CustomException;
 import com.bank_system.exceptions.InsufficientBalanceException;
 import com.bank_system.models.Transaction;
 import com.bank_system.services.implementations.MailSenderService;
 import com.bank_system.services.implementations.TransactionServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,23 +28,35 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('ADMIN')")
 public class TransactionController {
     private final TransactionServiceImpl transactionService;
-    private final MailSenderService mailSenderService;
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<Transaction>> createTransaction(@RequestBody CreateTransaction transaction) {
+    public ResponseEntity<ApiResponse<Transaction>> createTransaction(@Valid @RequestBody CreateTransaction transaction) {
         try {
-            ResponseEntity<ApiResponse<Transaction>> tran = transactionService.createTransaction(transaction);
-            return tran;
-        } catch (IllegalArgumentException | InsufficientBalanceException e) {
-            return ApiResponse.error(e.getMessage(), HttpStatus.BAD_REQUEST, null);
+            return transactionService.createTransaction(transaction);
+        } catch (CustomException e) {
+            return ApiResponse.error(e.getMessage(), HttpStatus.BAD_REQUEST, e);
+        } catch (Exception e) {
+            return ApiResponse.error("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
+
+    @PostMapping("/transfer")
+    public ResponseEntity<ApiResponse<Transaction>> transfer(@Valid @RequestBody CreateTransfer transaction) {
+        try {
+            return transactionService.transfer(transaction);
+        } catch (CustomException e) {
+            return ApiResponse.error(e.getMessage(), HttpStatus.BAD_REQUEST, e);
+        } catch (Exception e) {
+            return ApiResponse.error("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Transaction>> getTransactionById(@PathVariable Long id) {
         try {
             return transactionService.getTransactionById(id);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return ApiResponse.error(e.toString(), HttpStatus.BAD_REQUEST, null);
         }
     }
 
@@ -54,5 +70,4 @@ public class TransactionController {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         return transactionService.findAllTransactions(pageable);
     }
-
 }

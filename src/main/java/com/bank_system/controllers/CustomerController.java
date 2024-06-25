@@ -38,14 +38,14 @@ public class CustomerController {
         return customerService.deleteCustomer(customerId);
     }
 
-    @GetMapping("/id/{customerId}")
+    @GetMapping("/{customerId}")
     public ResponseEntity<ApiResponse<Optional<Customer>>> getCustomer(@PathVariable Long customerId) {
         return customerService.getCustomer(customerId);
     }
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<Page<Customer>>> getAllCustomers(@RequestParam(name = "page", defaultValue = "0") int pageNo, @RequestParam(name = "size", defaultValue = "10") int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.Direction.ASC, "id");
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.Direction.ASC,        "id");
         return customerService.getAllCustomers(pageable);
     }
 }

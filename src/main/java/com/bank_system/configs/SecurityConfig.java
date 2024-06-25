@@ -40,7 +40,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userService;
 
-    private static final String[] AUTH_WHITELIST = {"/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/api/documents/download/**", "/api/v1/auth/**"};
+    private static final String[] AUTH_WHITELIST = {"/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/api/documents/download/**", "/api/v1/auth/**", "/api/v1/transaction/**",};
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {

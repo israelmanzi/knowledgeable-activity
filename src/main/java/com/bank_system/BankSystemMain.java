@@ -60,13 +60,7 @@ public class BankSystemMain extends SpringBootServletInitializer {
 
         Optional<User> isUserPresent = userRepository.findUserByEmail(adminEmail);
         if (isUserPresent.isEmpty()) {
-            CreateUserDTO createUserDTO = new CreateUserDTO(
-                    adminEmail,
-                    adminUsername,
-                    adminPassword,
-                    adminFirstName,
-                    adminLastName
-            );
+            CreateUserDTO createUserDTO = new CreateUserDTO(adminEmail, adminUsername, adminPassword, adminFirstName, adminLastName);
             User userEntity = this.userService.createUserEntity(createUserDTO);
             Role role = this.roleService.getRoleByName(EUserRole.ADMIN);
             userEntity.getRoles().add(role);
