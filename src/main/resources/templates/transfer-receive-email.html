@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction: Transfer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background-color: #fff;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+        }
+        .header {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #777;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Transaction Notification</h1>
+    </div>
+    <div class="content">
+        <p>Dear <span th:text="${fromCustomer}">Customer</span>,</p>
+        <p>You have successfully received the following amount from <span th:text="${toCustomer}">Sender</span>'s account:</p>
+        <table>
+            <tr>
+                <th>Amount</th>
+                <td>$<span th:text="${amount}">0.00</span></td>
+            </tr>
+        </table>
+        <p>Thank you for using our services!</p>
+    </div>
+    <div class="footer">
+        <p>Best regards,</p>
+        <p>Israel Banking & Co.</p>
+    </div>
+</div>
+</body>
+</html>

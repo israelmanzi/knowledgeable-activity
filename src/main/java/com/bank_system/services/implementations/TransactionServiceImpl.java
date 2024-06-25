@@ -6,11 +6,13 @@ import com.bank_system.dtos.transaction.CreateTransfer;
 import com.bank_system.exceptions.CustomException;
 import com.bank_system.exceptions.NotFoundException;
 import com.bank_system.models.Customer;
+import com.bank_system.models.Message;
 import com.bank_system.models.Transaction;
 import com.bank_system.repositories.ICustomerRepository;
+import com.bank_system.repositories.IMessageRepository;
 import com.bank_system.repositories.ITransactionRepository;
-import com.bank_system.services.interfaces.CustomerService;
 import com.bank_system.services.interfaces.TransactionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
@@ -30,6 +33,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private ITransactionRepository transactionRepository;
+
+    @Autowired
+    private IMessageRepository messageRepository;
+
+    private final EmailService emailService;
 
     @Transactional
     public ResponseEntity<ApiResponse<Transaction>> createTransaction(CreateTransaction transaction) {
@@ -89,6 +97,15 @@ public class TransactionServiceImpl implements TransactionService {
             customerRepository.save(targetCustomer);
 
             Transaction newTransaction = new Transaction(transaction.getCustomerId(), transaction.getAccount(), transaction.getType(), new Date(), transaction.getAmount(), transaction.getTargetCustomerId(), transaction.getTargetAccount());
+
+            emailService.sendTransferEmail(customer, targetCustomer, transaction.getAmount());
+
+            Message message = new Message();
+            message.setCustomer(customer);
+            message.setMessage("Transferred " + transaction.getAmount() + " to " + customer.getFirstName() + " " + targetCustomer.getLastName());
+
+            messageRepository.save(message);
+
             return ApiResponse.success(transaction.getType().toString(), HttpStatus.OK, transactionRepository.save(newTransaction));
         } catch (NotFoundException e) {
             return ApiResponse.error(e.getMessage(), HttpStatus.NOT_FOUND, e);
@@ -134,6 +151,13 @@ public class TransactionServiceImpl implements TransactionService {
             // Update transaction details
             transaction.setAccount(customer.getAccount());
 
+            emailService.sendWithdrawEmail(customer, transaction.getAmount());
+
+            Message message = new Message();
+            message.setCustomer(customer);
+            message.setMessage("Withdrew " + transaction.getAmount() + " from the account");
+            messageRepository.save(message);
+
             ApiResponse.success("Withdraw successful!", HttpStatus.OK, transaction);
         } catch (Exception e) {
             throw new CustomException(e);
@@ -148,6 +172,13 @@ public class TransactionServiceImpl implements TransactionService {
 
             // Update transaction details
             transaction.setAccount(customer.getAccount());
+
+            emailService.sendSavingEmail(customer, transaction.getAmount());
+
+            Message message = new Message();
+            message.setCustomer(customer);
+            message.setMessage("Saved " + transaction.getAmount() + " into the account");
+            messageRepository.save(message);
 
             ApiResponse.success("Saving successful!", HttpStatus.OK, transaction);
         } catch (Exception e) {
