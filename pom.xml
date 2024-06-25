@@ -8,11 +8,11 @@
         <version>3.1.4</version>
         <relativePath/>
     </parent>
-    <groupId>com.springboot.www</groupId>
-    <artifactId>SpringBoot</artifactId>
+    <groupId>com.BankSystem.www</groupId>
+    <artifactId>BankSystem</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>SpringBoot</name>
-    <description>SpringBoot Project Description</description>
+    <name>BankSystem</name>
+    <description>Banking System</description>
     <properties>
         <java.version>17</java.version>
     </properties>
